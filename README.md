@@ -6,4 +6,6 @@ A simple website using go
 
 Exploring different aspects of go
 
-At this point, I'm using "go run main.go" command to run the program, as there is only one go file to compile
+Now we have multiple files and a folder structure. To compile all files, we will use command "go run cmd/web/*.go" or "go run ./cmd/web"
+
+Note: these commands will not work on powershell. Use gitbash
