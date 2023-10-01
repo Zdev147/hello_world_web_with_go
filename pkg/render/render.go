@@ -3,47 +3,60 @@ package render
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
+	"path/filepath"
 )
 
-// tc is the variable that stores the cache
-var tc = map[string]*template.Template{}
+const templatesPath = "./templates/"
 
-// RenderTemplates is used to parse the template, store it in cache and render template on web
+// RenderTemplates is used to parse and render html templates on web
 func RenderTemplates(w http.ResponseWriter, tmplName string) {
-	var template *template.Template
-
-	_, isInMap := tc[tmplName]
-	if isInMap {
-		fmt.Println("reading from cache")
-	} else {
-		fmt.Println("creating template")
-		err := CreateTemplateCache(tmplName)
-		if err != nil {
-			fmt.Println("error in creating cache:", err)
-			return
-		}
+	templateCache, err := CreateTemplateCache()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	template = tc[tmplName]
-	err := template.Execute(w, nil)
+	parsedTemplate := templateCache[tmplName]
+
+	err = parsedTemplate.Execute(w, nil)
 	if err != nil {
-		fmt.Println("error in parsing template:", err)
+		fmt.Println("error in executing template:", err)
 	}
 }
 
-// CreateTemplateCache is creating the cache for templates
-func CreateTemplateCache(tmplName string) error {
-	templatesToParse := []string{
-		"./templates/" + tmplName,
-		"./templates/base.layout.tmpl",
+// CreateTemplateCache is used to create template cache
+func CreateTemplateCache() (map[string]*template.Template, error) {
+	templateCache := map[string]*template.Template{}
+
+	pages, err := filepath.Glob(fmt.Sprint(templatesPath, "*.page.tmpl"))
+	if err != nil {
+		return templateCache, err
 	}
 
-	parsedTemplate, err := template.ParseFiles(templatesToParse...)
-	if err != nil {
-		return err
-	} else {
-		tc[tmplName] = parsedTemplate
-		return nil
+	// _ here is index
+	for _, page := range pages {
+		name := filepath.Base(page)
+
+		parsedTemplatesSet, err := template.New(name).ParseFiles(page)
+		if err != nil {
+			return templateCache, err
+		}
+
+		layoutMatches, err := filepath.Glob(fmt.Sprint(templatesPath, "*.layout.tmpl"))
+		if err != nil {
+			return templateCache, err
+		}
+
+		if len(layoutMatches) > 0 {
+			parsedTemplatesSet, err = parsedTemplatesSet.ParseGlob(fmt.Sprint(templatesPath, "*.layout.tmpl"))
+			if err != nil {
+				return templateCache, err
+			}
+		}
+
+		templateCache[name] = parsedTemplatesSet
 	}
+
+	return templateCache, nil
 }
