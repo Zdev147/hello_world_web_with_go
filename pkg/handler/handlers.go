@@ -3,16 +3,37 @@ package handler
 import (
 	"net/http"
 
+	"github.com/zdev147/hello_world_web_with_go/pkg/config"
 	"github.com/zdev147/hello_world_web_with_go/pkg/render"
 )
 
 // Home is the home page handler
-func Home(w http.ResponseWriter, r *http.Request) {
+// using repositoy as reciever
+func (repo *Repository) Home(w http.ResponseWriter, r *http.Request) {
 
 	render.RenderTemplates(w, "home.page.tmpl")
 }
 
 // About is the about page handler
-func About(w http.ResponseWriter, r *http.Request) {
+// using repositoy as reciever
+func (repo *Repository) About(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplates(w, "about.page.tmpl")
+}
+
+// Repository pattern for app config
+
+var Repo *Repository
+
+type Repository struct {
+	app *config.AppConfig
+}
+
+func CreateNewRepo(a *config.AppConfig) *Repository {
+	return &Repository{
+		app: a,
+	}
+}
+
+func NewHandlers(r *Repository) {
+	Repo = r
 }
