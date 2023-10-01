@@ -1,7 +1,7 @@
-{{ template "base" }}
+{{ template "base" . }}
 
 {{ define "title" }}
-About
+{{ index .StringData "title" }}
 {{ end }}
 
 {{ define "content" }}
@@ -9,7 +9,7 @@ About
     <div class="row">
         <div class="col">
             <h1>This is About Page</h1>
-
+            <p>My name is: {{ index .StringData "name" }}</p>
         </div>
     </div>
 </div>

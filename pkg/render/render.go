@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/zdev147/hello_world_web_with_go/pkg/config"
+	"github.com/zdev147/hello_world_web_with_go/pkg/models"
 )
 
 const templatesPath = "./templates/"
@@ -19,7 +20,7 @@ func SetConfig(a *config.AppConfig) {
 }
 
 // RenderTemplates is used to parse and render html templates on web
-func RenderTemplates(w http.ResponseWriter, tmplName string) {
+func RenderTemplates(w http.ResponseWriter, tmplName string, tmplData *models.TemplateData) {
 	var templateCache map[string]*template.Template
 	var err error
 
@@ -32,10 +33,9 @@ func RenderTemplates(w http.ResponseWriter, tmplName string) {
 		}
 	}
 
-	
 	parsedTemplate := templateCache[tmplName]
 
-	err = parsedTemplate.Execute(w, nil)
+	err = parsedTemplate.Execute(w, tmplData)
 	if err != nil {
 		fmt.Println("error in executing template:", err)
 	}

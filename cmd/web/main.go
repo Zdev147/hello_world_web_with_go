@@ -25,7 +25,7 @@ func main() {
 	app.TemplateCache = cache
 
 	// true for live server and false for debug
-	app.UseCache = true
+	app.UseCache = false
 
 	render.SetConfig(&app)
 
