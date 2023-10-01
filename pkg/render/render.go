@@ -9,7 +9,7 @@ import (
 // tc is the variable that stores the cache
 var tc = map[string]*template.Template{}
 
-// RenderTemplates is used to parse the template, store it in cache and template on web
+// RenderTemplates is used to parse the template, store it in cache and render template on web
 func RenderTemplates(w http.ResponseWriter, tmplName string) {
 	var template *template.Template
 
