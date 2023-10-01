@@ -2,32 +2,11 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 )
 
 const portNumber = ":8000"
-
-// Home is the home page handler
-func Home(w http.ResponseWriter, r *http.Request) {
-	// Fprintln is used to print on web
-	// _ is used to ignore a value, as go require a variable to use if it is declared
-	_, err := fmt.Fprintln(w, "This home page")
-
-	if err != nil {
-		// Println is used to print on console
-		fmt.Println(err)
-	}
-}
-
-// About is the about page handler
-func About(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprintln(w, "This about page")
-
-	if err != nil {
-		// Println is used to print on console
-		fmt.Println(err)
-	}
-}
 
 // main is the entry point of go program
 func main() {
@@ -36,4 +15,24 @@ func main() {
 
 	fmt.Printf("Starting server on port %s", portNumber)
 	http.ListenAndServe(portNumber, nil)
+}
+
+// Home is the home page handler
+func Home(w http.ResponseWriter, r *http.Request) {
+	renderTemplates(w, "home.page.tmpl")
+}
+
+// About is the about page handler
+func About(w http.ResponseWriter, r *http.Request) {
+	renderTemplates(w, "about.page.tmpl")
+}
+
+// renderTemplates is used to render parse and render html templates on web
+func renderTemplates(w http.ResponseWriter, tmplName string) {
+	parsedTemplate, _ := template.ParseFiles("./templates/" + tmplName)
+
+	err := parsedTemplate.Execute(w, nil)
+	if err != nil {
+		fmt.Println("error in parsing template:", err)
+	}
 }
