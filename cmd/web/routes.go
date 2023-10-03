@@ -24,6 +24,7 @@ func routes(app *config.AppConfig) http.Handler {
 	router := chi.NewRouter()
 
 	router.Use(middleware.Logger)
+	router.Use(TestMidleware)
 
 	router.Get("/", handler.Repo.Home)
 	router.Get("/about", handler.Repo.About)
